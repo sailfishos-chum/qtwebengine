@@ -4,7 +4,7 @@
 
 %global use_system_libvpx 1
 %global use_system_libwebp 1
-%global use_system_jsoncpp 1
+%global use_system_jsoncpp 0
 %global use_system_re2 0
 %global use_system_libicu 1
 
@@ -36,8 +36,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name: opt-qt5-qtwebengine
-Version: 5.15.13
-Release: 4%{?dist}
+Version: 5.15.12
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -48,6 +48,36 @@ Source0: %{name}-%{version}.tar.bz2
 
 # macros
 Source10: macros.qt5-qtwebengine
+
+# fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
+# ARM flags with our %%qmake_qt5 macro, including for the next patch
+Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
+# disable NEON vector instructions on ARM where the NEON code FTBFS due to
+# GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
+Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
+# workaround FTBFS against kernel-headers-5.2.0+
+Patch4:  qtwebengine-SIOCGSTAMP.patch
+#  fix build when using qt < 5.14
+Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
+# gcc-12 FTBFS "use of deleted function"
+Patch6:  chromium-angle-nullptr.patch
+Patch7:  chromium-hunspell-nullptr.patch
+Patch8:  qtwebengine-everywhere-5.15.8-libpipewire-0.3.patch
+# Fix/workaround FTBFS on aarch64 with newer glibc
+Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
+# Use Python2
+Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
+# FTBFS TRUE/FALSE undeclared
+Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
+Patch32: qtwebengine-skia-missing-includes.patch
+# Fix QtWebEngine on Apple M1 hardware (patch from Arch Linux ARM)
+## Cf. https://bugreports.qt.io/browse/QTBUG-108674
+## Cf. https://bugzilla.redhat.com/show_bug.cgi?id=2144200
+## From: https://chromium-review.googlesource.com/c/chromium/src/+/3545665
+Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
+Patch34: qtwebengine-fix-build.patch
+Patch35: qt5-qtwebengine-c99.patch
+
 
 BuildRequires: make
 BuildRequires: python
@@ -63,7 +93,7 @@ BuildRequires: opt-qt5-qtsvg-devel
 BuildRequires: opt-qt5-qtwebchannel-devel
 BuildRequires: opt-qt5-qttools-static
 BuildRequires: opt-qt5-qtquickcontrols2-devel
-BuildRequires: ninja-build
+BuildRequires: ninja
 BuildRequires: cmake
 BuildRequires: bison
 BuildRequires: flex
@@ -76,14 +106,14 @@ BuildRequires: gperf
 BuildRequires: libicu-devel >= 65
 %endif
 BuildRequires: libjpeg-devel
-#BuildRequires: nodejs
+BuildRequires: nodejs18
 %if 0%{?use_system_re2}
 BuildRequires: re2-devel
 %endif
 %if 0%{?pipewire}
 BuildRequires:  pkgconfig(libpipewire-0.3)
 %endif
-BuildRequires: snappy-devel
+#BuildRequires: snappy-devel
 BuildRequires: pkgconfig(expat)
 BuildRequires: pkgconfig(gobject-2.0)
 BuildRequires: pkgconfig(glib-2.0)
@@ -102,7 +132,11 @@ BuildRequires: pkgconfig(libwebp) >= 0.6.0
 BuildRequires: pkgconfig(harfbuzz)
 BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
-BuildRequires: pkgconfig(libevent)
+
+# SFOS replacement
+#BuildRequires: pkgconfig(libevent)
+BuildRequires: libev-libevent-devel
+
 BuildRequires: pkgconfig(poppler-cpp)
 BuildRequires: pkgconfig(zlib)
 %if 0%{?fedora} && 0%{?fedora} < 30
@@ -125,7 +159,7 @@ Provides: bundled(minizip) = 1.2
 BuildRequires: pkgconfig(libcap)
 BuildRequires: pkgconfig(libpulse)
 BuildRequires: pkgconfig(alsa)
-BuildRequires: pkgconfig(libpci)
+#BuildRequires: pkgconfig(libpci)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
 #BuildRequires: pkgconfig(lcms2)
@@ -134,7 +168,7 @@ BuildRequires: pkgconfig(xkbcommon)
 ## https://bugreports.qt.io/browse/QTBUG-59094
 ## requires libxml2 built with icu support
 #BuildRequires: pkgconfig(libxslt) pkgconfig(libxml-2.0)
-BuildRequires: perl-interpreter
+BuildRequires: perl
 # fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
 # per https://fedoraproject.org/wiki/Changes/RetirePython2#FESCo_exceptions
 # Only the interpreter is needed
