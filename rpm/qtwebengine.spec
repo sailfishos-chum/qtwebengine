@@ -200,9 +200,31 @@ Support for remote debugging.
 
 
 %prep
-%autosetup -n %{name}-%{version}/upstream -p1
+%setup -n %{name}-%{version}/upstream
 
-pushd src/3rdparty/chromium
+# SB2 refuses to patch across the submodules. So, we have to split the
+# patches
+
+# patches in main src
+%patch2 -p1
+%patch3 -p1
+%patch5 -p1
+%patch51 -p1
+%patch52 -p1
+
+# patches in src/3rdparty
+pushd src/3rdparty
+%patch4 -p3
+%patch6 -p3
+%patch7 -p3
+%patch24 -p3
+%patch26 -p3
+%patch31 -p3
+%patch32 -p3
+%patch33 -p3
+%patch34 -p3
+%patch35 -p3
+%patch50 -p3
 popd
 
 # copy the Chromium license so it is installed with the appropriate name
