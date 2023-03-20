@@ -64,8 +64,7 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.15.5-use-python2-main-tree.patch
 Patch27: qtwebengine-everywhere-5.15.5-use-python2-chromium.patch
-# FTBFS TRUE/FALSE undeclared
-Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
+
 Patch32: qtwebengine-skia-missing-includes.patch
 # Fix QtWebEngine on Apple M1 hardware (patch from Arch Linux ARM)
 ## Cf. https://bugreports.qt.io/browse/QTBUG-108674
@@ -221,7 +220,6 @@ pushd src/3rdparty
 %patch7 -p3
 %patch24 -p3
 %patch27 -p3
-%patch31 -p3
 %patch32 -p3
 %patch33 -p3
 %patch34 -p3
