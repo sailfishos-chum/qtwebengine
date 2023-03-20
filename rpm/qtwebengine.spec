@@ -62,7 +62,8 @@ Patch7:  chromium-hunspell-nullptr.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
-Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
+Patch26: qtwebengine-everywhere-5.15.5-use-python2-main-tree.patch
+Patch27: qtwebengine-everywhere-5.15.5-use-python2-chromium.patch
 # FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
 Patch32: qtwebengine-skia-missing-includes.patch
@@ -209,6 +210,7 @@ Support for remote debugging.
 %patch2 -p1
 %patch3 -p1
 %patch5 -p1
+%patch26 -p1
 %patch51 -p1
 %patch52 -p1
 
@@ -218,7 +220,7 @@ pushd src/3rdparty
 %patch6 -p3
 %patch7 -p3
 %patch24 -p3
-%patch26 -p3
+%patch27 -p3
 %patch31 -p3
 %patch32 -p3
 %patch33 -p3
