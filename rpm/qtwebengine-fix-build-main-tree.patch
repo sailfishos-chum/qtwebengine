@@ -1,0 +1,13 @@
+diff --git a/src/core/browsing_data_remover_delegate_qt.h b/src/core/browsing_data_remover_delegate_qt.h
+index a10409f39..b9f5e59d8 100644
+--- a/src/core/browsing_data_remover_delegate_qt.h
++++ b/src/core/browsing_data_remover_delegate_qt.h
+@@ -42,6 +42,8 @@
+ 
+ #include "content/public/browser/browsing_data_remover_delegate.h"
+ 
++#include <cstdint>
++
+ namespace QtWebEngineCore {
+ 
+ class BrowsingDataRemoverDelegateQt : public content::BrowsingDataRemoverDelegate {

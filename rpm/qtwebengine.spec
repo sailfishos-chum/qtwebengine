@@ -71,8 +71,9 @@ Patch32: qtwebengine-skia-missing-includes.patch
 ## Cf. https://bugzilla.redhat.com/show_bug.cgi?id=2144200
 ## From: https://chromium-review.googlesource.com/c/chromium/src/+/3545665
 Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
-Patch34: qtwebengine-fix-build.patch
+Patch34: qtwebengine-fix-build-chromium.patch
 Patch35: qt5-qtwebengine-c99.patch
+Patch36: qtwebengine-fix-build-main-tree.patch
 
 # SFOS build specific patches
 Patch50: SB2-environment-cannot-handle-Python-multiprocessing.patch
@@ -210,6 +211,7 @@ Support for remote debugging.
 %patch3 -p1
 %patch5 -p1
 %patch26 -p1
+%patch36 -p1
 %patch51 -p1
 %patch52 -p1
 

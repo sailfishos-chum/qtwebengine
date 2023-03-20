@@ -445,19 +445,6 @@ index c1d69c18f..eb33c6816 100644
  #include <string>
  
  // Conversion routines between UT8 and UTF16, used by string-16.{h,cc}. You may
-diff --git a/src/core/browsing_data_remover_delegate_qt.h b/src/core/browsing_data_remover_delegate_qt.h
-index a10409f39..b9f5e59d8 100644
---- a/src/core/browsing_data_remover_delegate_qt.h
-+++ b/src/core/browsing_data_remover_delegate_qt.h
-@@ -42,6 +42,8 @@
- 
- #include "content/public/browser/browsing_data_remover_delegate.h"
- 
-+#include <cstdint>
-+
- namespace QtWebEngineCore {
- 
- class BrowsingDataRemoverDelegateQt : public content::BrowsingDataRemoverDelegate {
 diff --git a/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml b/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml
 index fb06e73..f20c11e 100644
 --- a/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml
