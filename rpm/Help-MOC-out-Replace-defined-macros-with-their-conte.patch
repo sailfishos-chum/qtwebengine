@@ -1,0 +1,53 @@
+From 75b8b5e70bea91c55e4a65b86a93c0b1e4e7bd2e Mon Sep 17 00:00:00 2001
+From: Rinigus <rinigus.git@gmail.com>
+Date: Mon, 20 Mar 2023 21:01:37 +0200
+Subject: [PATCH 1/2] Help MOC out: Replace defined macros with their content
+
+---
+ src/pdf/quick/plugin.cpp              | 2 +-
+ src/plugins/imageformats/pdf/main.cpp | 2 +-
+ src/webengine/plugin/plugin.cpp       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/pdf/quick/plugin.cpp b/src/pdf/quick/plugin.cpp
+index b082fcb4a..7a0590d47 100644
+--- a/src/pdf/quick/plugin.cpp
++++ b/src/pdf/quick/plugin.cpp
+@@ -65,7 +65,7 @@ QT_BEGIN_NAMESPACE
+ class QtQuick2PdfPlugin : public QQmlExtensionPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
++    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ 
+ public:
+     QtQuick2PdfPlugin() : QQmlExtensionPlugin() { }
+diff --git a/src/plugins/imageformats/pdf/main.cpp b/src/plugins/imageformats/pdf/main.cpp
+index b4d59353c..48dad1e5f 100644
+--- a/src/plugins/imageformats/pdf/main.cpp
++++ b/src/plugins/imageformats/pdf/main.cpp
+@@ -41,7 +41,7 @@ QT_BEGIN_NAMESPACE
+ class QPdfPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID QImageIOHandlerFactoryInterface_iid FILE "pdf.json")
++    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pdf.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/webengine/plugin/plugin.cpp b/src/webengine/plugin/plugin.cpp
+index a74373b23..6c5979f39 100644
+--- a/src/webengine/plugin/plugin.cpp
++++ b/src/webengine/plugin/plugin.cpp
+@@ -70,7 +70,7 @@ static QObject *webEngineSingletonProvider(QQmlEngine *, QJSEngine *)
+ class QtWebEnginePlugin : public QQmlExtensionPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
++    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
+     void initializeEngine(QQmlEngine *engine, const char *uri) override
+     {
+-- 
+2.39.2
+

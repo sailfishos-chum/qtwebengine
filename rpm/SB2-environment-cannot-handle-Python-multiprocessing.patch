@@ -1,0 +1,86 @@
+From c7ece7f359584ef8e7170ce51122beab1afc9184 Mon Sep 17 00:00:00 2001
+From: Rinigus <rinigus.git@gmail.com>
+Date: Mon, 20 Mar 2023 20:47:02 +0200
+Subject: [PATCH] SB2 environment cannot handle Python multiprocessing.Pool
+
+---
+ .../bindings/scripts/bind_gen/task_queue.py   | 56 ++++++++++---------
+ 1 file changed, 31 insertions(+), 25 deletions(-)
+
+diff --git a/src/3rdparty/chromium/third_party/blink/renderer/bindings/scripts/bind_gen/task_queue.py b/src/3rdparty/chromium/third_party/blink/renderer/bindings/scripts/bind_gen/task_queue.py
+index 0d8f4c0f303..2274ca1ddbb 100644
+--- a/src/3rdparty/chromium/third_party/blink/renderer/bindings/scripts/bind_gen/task_queue.py
++++ b/src/3rdparty/chromium/third_party/blink/renderer/bindings/scripts/bind_gen/task_queue.py
+@@ -15,8 +15,8 @@ class TaskQueue(object):
+ 
+     def __init__(self):
+         self._pool_size = multiprocessing.cpu_count()
+-        self._pool = multiprocessing.Pool(self._pool_size,
+-                                          package_initializer().init)
++        #self._pool = multiprocessing.Pool(self._pool_size,
++        #                                  package_initializer().init)
+         self._requested_tasks = []  # List of (func, args, kwargs)
+         self._worker_tasks = []  # List of multiprocessing.pool.AsyncResult
+         self._did_run = False
+@@ -46,29 +46,35 @@ class TaskQueue(object):
+         self._did_run = True
+ 
+         num_of_requested_tasks = len(self._requested_tasks)
+-        chunk_size = 1
+-        i = 0
+-        while i < num_of_requested_tasks:
+-            tasks = self._requested_tasks[i:i + chunk_size]
+-            i += chunk_size
+-            self._worker_tasks.append(
+-                self._pool.apply_async(_task_queue_run_tasks, [tasks]))
+-        self._pool.close()
+-
+-        timeout_in_sec = 1
+-        while True:
+-            self._report_worker_task_progress(report_progress)
+-            for worker_task in self._worker_tasks:
+-                if not worker_task.ready():
+-                    worker_task.wait(timeout_in_sec)
+-                    break
+-                if not worker_task.successful():
+-                    worker_task.get()  # Let |get()| raise an exception.
+-                    assert False
+-            else:
+-                break
+-
+-        self._pool.join()
++        cnt = 0
++        for task in self._requested_tasks:
++            func, args, kwargs = task
++            apply(func, args, kwargs)
++            print "Task completed", cnt, num_of_requested_tasks
++            cnt = cnt + 1
++        # chunk_size = 1
++        # i = 0
++        # while i < num_of_requested_tasks:
++        #     tasks = self._requested_tasks[i:i + chunk_size]
++        #     i += chunk_size
++        #     self._worker_tasks.append(
++        #         self._pool.apply_async(_task_queue_run_tasks, [tasks]))
++        # self._pool.close()
++
++        # timeout_in_sec = 1
++        # while True:
++        #     self._report_worker_task_progress(report_progress)
++        #     for worker_task in self._worker_tasks:
++        #         if not worker_task.ready():
++        #             worker_task.wait(timeout_in_sec)
++        #             break
++        #         if not worker_task.successful():
++        #             worker_task.get()  # Let |get()| raise an exception.
++        #             assert False
++        #     else:
++        #         break
++
++        # self._pool.join()
+ 
+     def _report_worker_task_progress(self, report_progress):
+         assert report_progress is None or callable(report_progress)
+-- 
+2.39.2
+

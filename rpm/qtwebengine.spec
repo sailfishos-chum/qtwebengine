@@ -8,21 +8,17 @@
 %global use_system_re2 0
 %global use_system_libicu 1
 
-# NEON support on ARM (detected at runtime) - disable this if you are hitting
-# FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
-#global arm_neon 1
-
-# the QMake CONFIG flags to force debugging information to be produced in
-# release builds, and for all parts of the code
-%ifarch %{arm} aarch64
-# the ARM builder runs out of memory during linking with the full setting below,
-# so omit debugging information for the parts upstream deems it dispensable for
-# (webcore, v8base)
-%global debug_config %{nil}
-%else
-%global debug_config force_debug_info
-# webcore_debug v8base_debug
-%endif
+# # the QMake CONFIG flags to force debugging information to be produced in
+# # release builds, and for all parts of the code
+# %ifarch %{arm} aarch64
+# # the ARM builder runs out of memory during linking with the full setting below,
+# # so omit debugging information for the parts upstream deems it dispensable for
+# # (webcore, v8base)
+# %global debug_config %{nil}
+# %else
+# %global debug_config force_debug_info
+# # webcore_debug v8base_debug
+# %endif
 
 # spellchecking dictionary directory
 %global _qtwebengine_dictionaries_dir %{_opt_qt5_datadir}/qtwebengine_dictionaries
@@ -62,7 +58,7 @@ Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
 # gcc-12 FTBFS "use of deleted function"
 Patch6:  chromium-angle-nullptr.patch
 Patch7:  chromium-hunspell-nullptr.patch
-Patch8:  qtwebengine-everywhere-5.15.8-libpipewire-0.3.patch
+#Patch8:  qtwebengine-everywhere-5.15.8-libpipewire-0.3.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
@@ -77,6 +73,11 @@ Patch32: qtwebengine-skia-missing-includes.patch
 Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
 Patch34: qtwebengine-fix-build.patch
 Patch35: qt5-qtwebengine-c99.patch
+
+# SFOS build specific patches
+Patch50: SB2-environment-cannot-handle-Python-multiprocessing.patch
+Patch51: Help-MOC-out-Replace-defined-macros-with-their-conte.patch
+Patch52: Drop-Designer-plugin-as-it-fails-to-compile.patch
 
 
 BuildRequires: make
@@ -222,12 +223,12 @@ test -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h"
 export QTDIR=%{_opt_qt5_prefix}
 touch .git
 
-export STRIP=strip
+#export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
 export NINJA_PATH=%{__ninja}
 
+  #{?debug_config:CONFIG+="%{debug_config}}" \
 %{opt_qmake_qt5} \
-  %{?debug_config:CONFIG+="%{debug_config}}" \
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
@@ -238,10 +239,6 @@ make %{?_smp_mflags}
 
 %install
 make install INSTALL_ROOT=%{buildroot}
-
-%if 0%{?docs}
-make install_docs INSTALL_ROOT=%{buildroot}
-%endif
 
 # rpm macros
 install -p -m644 -D %{SOURCE10} \
@@ -275,7 +272,6 @@ mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_opt_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
 
-
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -302,7 +298,7 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 %{_opt_qt5_bindir}/qwebengine_convert_dict
 %{_opt_qt5_libdir}/qt5/qml/*
 %{_opt_qt5_libdir}/qt5/libexec/QtWebEngineProcess
-%{_opt_qt5_plugindir}/designer/libqwebengineview.so
+#{_opt_qt5_plugindir}/designer/libqwebengineview.so
 %{_opt_qt5_plugindir}/imageformats/libqpdf.so
 %dir %{_opt_qt5_datadir}/resources/
 %if ! 0%{?use_system_libicu}
