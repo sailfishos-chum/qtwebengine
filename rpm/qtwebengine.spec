@@ -236,7 +236,7 @@ cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
 # fix/workaround
 # fatal error: QtWebEngineCore/qtwebenginecoreglobal.h: No such file or directory
 if [ ! -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h" ]; then
-%_qt5_bindir/syncqt.pl -version %{version}
+%_opt_qt5_bindir/syncqt.pl -version %{version}
 fi
 
 # abort if this doesn't get created by syncqt.pl
