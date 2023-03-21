@@ -178,7 +178,7 @@ BuildRequires: perl
 BuildRequires: pkgconfig(vpx) >= 1.8.0
 %endif
 
-%{?_opt_qt5_version:Requires: qt5-qtbase%{?_isa} = %{_opt_qt5_version}}
+%{?_opt_qt5_version:Requires: opt-qt5-qtbase%{?_isa} = %{_opt_qt5_version}}
 
 %description
 %{summary}.
