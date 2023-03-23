@@ -8,18 +8,6 @@
 %global use_system_re2 0
 %global use_system_libicu 1
 
-# # the QMake CONFIG flags to force debugging information to be produced in
-# # release builds, and for all parts of the code
-# %ifarch %{arm} aarch64
-# # the ARM builder runs out of memory during linking with the full setting below,
-# # so omit debugging information for the parts upstream deems it dispensable for
-# # (webcore, v8base)
-# %global debug_config %{nil}
-# %else
-# %global debug_config force_debug_info
-# # webcore_debug v8base_debug
-# %endif
-
 # spellchecking dictionary directory
 %global _qtwebengine_dictionaries_dir %{_opt_qt5_datadir}/qtwebengine_dictionaries
 
@@ -44,6 +32,10 @@ Source0: %{name}-%{version}.tar.bz2
 
 # macros
 Source10: macros.qt5-qtwebengine
+
+# mksnapshot generated code for aarch64
+Source20: aarch64-embedded.S
+Source21: aarch64-snapshot.cc
 
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
@@ -247,19 +239,42 @@ test -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h"
 export QTDIR=%{_opt_qt5_prefix}
 touch .git
 
-#export STRIP=strip
+export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
+export NINJAJOBS=%{?_smp_mflags}
 export NINJA_PATH=%{__ninja}
 
-  #{?debug_config:CONFIG+="%{debug_config}}" \
 %{opt_qmake_qt5} \
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
+  QMAKE_STRIP=STRIP \
   .
 
+rm .compilation-failed || echo Clean sources
+
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
-make %{?_smp_mflags}
+make %{?_smp_mflags} || touch .compilation-failed
+
+# compilation could have failed as mksnapshot is requesting large memory on aarch64
+# inject the generated code in this case and adjust ninja build script
+%ifarch aarch64
+if [ -f .compilation-failed ]; then
+rm .compilation-failed
+if [ -f src/core/release/mksnapshot ]; then
+    cp %{SOURCE20} src/core/release/gen/v8/embedded.S
+    cp %{SOURCE21} src/core/release/gen/v8/snapshot.cc
+    sed -i \
+	's|../../3rdparty/chromium/v8/tools/run.py ./mksnapshot|../../3rdparty/chromium/v8/tools/run.py echo ./mksnapshot|g' \
+	src/core/release/toolchain.ninja
+    make %{?_smp_mflags} || touch .compilation-failed
+fi
+fi
+%endif
+
+if [ -f .compilation-failed ]; then
+    exit 1
+fi
 
 %install
 make install INSTALL_ROOT=%{buildroot}
@@ -299,19 +314,6 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-# %if 0%{?fedora} > 35 || 0%{?epel} > 9
-# %filetriggerin -- %{_datadir}/hunspell
-# %else
-# %filetriggerin -- %{_datadir}/myspell
-# %endif
-# while read filename ; do
-#   case "$filename" in
-#     *.dic)
-#       bdicname=%{_qtwebengine_dictionaries_dir}/`basename -s .dic "$filename"`.bdic
-#       %{_opt_qt5_bindir}/qwebengine_convert_dict "$filename" "$bdicname" &> /dev/null || :
-#       ;;
-#   esac
-# done
 
 %files
 %license LICENSE.*
