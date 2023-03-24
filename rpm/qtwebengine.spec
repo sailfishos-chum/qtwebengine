@@ -248,6 +248,7 @@ export NINJA_PATH=%{__ninja}
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
+  QMAKE_EXTRA_ARGS+=" -webengine-proprietary-codecs" \
   QMAKE_STRIP=STRIP \
   .
 
