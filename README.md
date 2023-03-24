@@ -49,7 +49,8 @@ mb2 -t devel-aarch64 build .
 ```
 
 Alternative is to install QEMU with Aarch64 as user target (`QEMU_USER_TARGETS`
-on Gentoo and run as in
+on Gentoo) and run as in
+
 ```
 qemu-aarch64 -L ~/mer/targets/devel-aarch64 \
    ./mksnapshot --turbo_instruction_scheduling --target_os=linux --target_arch=arm64 \
