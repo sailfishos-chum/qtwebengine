@@ -48,6 +48,17 @@ mb2 -t devel-aarch64 build .
 ./mksnapshot --turbo_instruction_scheduling --target_os=linux --target_arch=arm64 --embedded_src embedded.S --embedded_variant Default --random-seed 314159265 --startup_src snapshot.cc --no-native-code-counters
 ```
 
+Alternative is to install QEMU with Aarch64 as user target (`QEMU_USER_TARGETS`
+on Gentoo and run as in
+```
+qemu-aarch64 -L ~/mer/targets/devel-aarch64 \
+   ./mksnapshot --turbo_instruction_scheduling --target_os=linux --target_arch=arm64 \
+   --embedded_src gen/v8/embedded.S --embedded_variant Default --random-seed 314159265 \
+   --startup_src gen/v8/snapshot.cc --no-native-code-counters
+```
+
+where ~/mer/targets/devel-aarch64 is your SFOS aarch64 target.
+
 7. copy `snapshot.cc` and `embedded.S` from device to this repo and
 add under `rpm/` as `rpm/aarch64-embedded.S` `rpm/aarch64-snapshot.cc`
 
