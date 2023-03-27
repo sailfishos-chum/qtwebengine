@@ -17,6 +17,7 @@
 %global __provides_exclude ^lib.*plugin\\.so.*$
 # and designer plugins
 %global __provides_exclude_from ^%{_opt_qt5_plugindir}/.*\\.so$
+%{?opt_qt5_default_filter}
 
 Summary: Qt5 - QtWebEngine components
 Name: opt-qt5-qtwebengine
@@ -77,8 +78,6 @@ BuildRequires: make
 BuildRequires: python
 BuildRequires: opt-qt5-qtbase-devel
 BuildRequires: opt-qt5-qtbase-private-devel
-# TODO: check of = is really needed or if >= would be good enough -- rex
-%{?_opt_qt5:Requires: %{_opt_qt5}%{?_isa} = %{_opt_qt5_version}}
 BuildRequires: opt-qt5-qtdeclarative-devel
 BuildRequires: opt-qt5-qtxmlpatterns-devel
 BuildRequires: opt-qt5-qtlocation-devel
@@ -171,6 +170,13 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 %endif
 
 %{?_opt_qt5_version:Requires: opt-qt5-qtbase%{?_isa} = %{_opt_qt5_version}}
+Requires: opt-qt5-qtlocation >= %{qt_version}
+Requires: opt-qt5-qtbase-gui >= %{qt_version}
+Requires: opt-qt5-qtdeclarative >= %{qt_version}
+Requires: opt-qt5-qtwebchannel >= %{qt_version}
+Requires: opt-qt5-qtsensors >= %{qt_version}
+Requires: opt-qt5-qtsensors >= %{qt_version}
+Requires: opt-qt5-qtsvg >= %{qt_version}
 
 %description
 %{summary}.
