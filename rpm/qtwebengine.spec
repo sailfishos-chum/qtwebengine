@@ -253,9 +253,8 @@ export NINJA_PATH=%{__ninja}
 %{opt_qmake_qt5} \
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
-  %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
   QMAKE_EXTRA_ARGS+=" -webengine-proprietary-codecs" \
-  QMAKE_STRIP=STRIP \
+  QMAKE_STRIP=$STRIP \
   .
 
 rm .compilation-failed || echo Clean sources
