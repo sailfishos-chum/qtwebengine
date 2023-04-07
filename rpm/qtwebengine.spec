@@ -34,10 +34,6 @@ Source0: %{name}-%{version}.tar.bz2
 # macros
 Source10: macros.qt5-qtwebengine
 
-# mksnapshot generated code for aarch64
-Source20: aarch64-embedded.S
-Source21: aarch64-snapshot.cc
-
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
 Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
@@ -257,30 +253,8 @@ export NINJA_PATH=%{__ninja}
   QMAKE_STRIP=$STRIP \
   .
 
-rm .compilation-failed || echo Clean sources
-
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
-make %{?_smp_mflags} || touch .compilation-failed
-
-# compilation could have failed as mksnapshot is requesting large memory on aarch64
-# inject the generated code in this case and adjust ninja build script
-%ifarch aarch64
-if [ -f .compilation-failed ]; then
-rm .compilation-failed
-if [ -f src/core/release/mksnapshot ]; then
-    cp %{SOURCE20} src/core/release/gen/v8/embedded.S
-    cp %{SOURCE21} src/core/release/gen/v8/snapshot.cc
-    sed -i \
-	's|../../3rdparty/chromium/v8/tools/run.py ./mksnapshot|../../3rdparty/chromium/v8/tools/run.py echo ./mksnapshot|g' \
-	src/core/release/toolchain.ninja
-    make %{?_smp_mflags} || touch .compilation-failed
-fi
-fi
-%endif
-
-if [ -f .compilation-failed ]; then
-    exit 1
-fi
+make %{?_smp_mflags}
 
 %install
 make install INSTALL_ROOT=%{buildroot}
