@@ -34,10 +34,6 @@ Source0: %{name}-%{version}.tar.bz2
 # macros
 Source10: macros.qt5-qtwebengine
 
-# mksnapshot generated code for aarch64
-Source20: aarch64-embedded.S
-Source21: aarch64-snapshot.cc
-
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
 Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
@@ -67,12 +63,6 @@ Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
 Patch34: qtwebengine-fix-build-chromium.patch
 Patch35: qt5-qtwebengine-c99.patch
 Patch36: qtwebengine-fix-build-main-tree.patch
-
-# SFOS build specific patches
-Patch50: SB2-environment-cannot-handle-Python-multiprocessing.patch
-Patch51: Help-MOC-out-Replace-defined-macros-with-their-conte.patch
-Patch52: Drop-Designer-plugin-as-it-fails-to-compile.patch
-
 
 BuildRequires: make
 BuildRequires: python
@@ -197,6 +187,12 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description devtools
 Support for remote debugging.
 
+%package designer-plugin
+Summary: WebEngine Designer plugin
+Requires: %{name}%{?_isa} = %{version}-%{release}
+%description designer-plugin
+Support for Designer.
+
 
 %prep
 %setup -n %{name}-%{version}/upstream
@@ -210,8 +206,6 @@ Support for remote debugging.
 %patch5 -p1
 %patch26 -p1
 %patch36 -p1
-%patch51 -p1
-%patch52 -p1
 
 # patches in src/3rdparty
 pushd src/3rdparty
@@ -224,7 +218,6 @@ pushd src/3rdparty
 %patch33 -p3
 %patch34 -p3
 %patch35 -p3
-%patch50 -p3
 popd
 
 # copy the Chromium license so it is installed with the appropriate name
@@ -257,30 +250,8 @@ export NINJA_PATH=%{__ninja}
   QMAKE_STRIP=$STRIP \
   .
 
-rm .compilation-failed || echo Clean sources
-
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
-make %{?_smp_mflags} || touch .compilation-failed
-
-# compilation could have failed as mksnapshot is requesting large memory on aarch64
-# inject the generated code in this case and adjust ninja build script
-%ifarch aarch64
-if [ -f .compilation-failed ]; then
-rm .compilation-failed
-if [ -f src/core/release/mksnapshot ]; then
-    cp %{SOURCE20} src/core/release/gen/v8/embedded.S
-    cp %{SOURCE21} src/core/release/gen/v8/snapshot.cc
-    sed -i \
-	's|../../3rdparty/chromium/v8/tools/run.py ./mksnapshot|../../3rdparty/chromium/v8/tools/run.py echo ./mksnapshot|g' \
-	src/core/release/toolchain.ninja
-    make %{?_smp_mflags} || touch .compilation-failed
-fi
-fi
-%endif
-
-if [ -f .compilation-failed ]; then
-    exit 1
-fi
+make %{?_smp_mflags}
 
 %install
 make install INSTALL_ROOT=%{buildroot}
@@ -330,7 +301,6 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 %{_opt_qt5_bindir}/qwebengine_convert_dict
 %{_opt_qt5_libdir}/qt5/qml/*
 %{_opt_qt5_libdir}/qt5/libexec/QtWebEngineProcess
-#{_opt_qt5_plugindir}/designer/libqwebengineview.so
 %{_opt_qt5_plugindir}/imageformats/libqpdf.so
 %dir %{_opt_qt5_datadir}/resources/
 %if ! 0%{?use_system_libicu}
@@ -407,3 +377,5 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 %files devtools
 %{_opt_qt5_datadir}/resources/qtwebengine_devtools_resources.pak
 
+%files designer-plugin
+%{_opt_qt5_plugindir}/designer/libqwebengineview.so
