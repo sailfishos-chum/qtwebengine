@@ -64,12 +64,6 @@ Patch34: qtwebengine-fix-build-chromium.patch
 Patch35: qt5-qtwebengine-c99.patch
 Patch36: qtwebengine-fix-build-main-tree.patch
 
-# SFOS build specific patches
-Patch50: SB2-environment-cannot-handle-Python-multiprocessing.patch
-Patch51: Help-MOC-out-Replace-defined-macros-with-their-conte.patch
-Patch52: Drop-Designer-plugin-as-it-fails-to-compile.patch
-
-
 BuildRequires: make
 BuildRequires: python
 BuildRequires: opt-qt5-qtbase-devel
@@ -193,6 +187,12 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description devtools
 Support for remote debugging.
 
+%package designer-plugin
+Summary: WebEngine Designer plugin
+Requires: %{name}%{?_isa} = %{version}-%{release}
+%description designer-plugin
+Support for Designer.
+
 
 %prep
 %setup -n %{name}-%{version}/upstream
@@ -206,8 +206,6 @@ Support for remote debugging.
 %patch5 -p1
 %patch26 -p1
 %patch36 -p1
-%patch51 -p1
-%patch52 -p1
 
 # patches in src/3rdparty
 pushd src/3rdparty
@@ -220,7 +218,6 @@ pushd src/3rdparty
 %patch33 -p3
 %patch34 -p3
 %patch35 -p3
-%patch50 -p3
 popd
 
 # copy the Chromium license so it is installed with the appropriate name
@@ -304,7 +301,6 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 %{_opt_qt5_bindir}/qwebengine_convert_dict
 %{_opt_qt5_libdir}/qt5/qml/*
 %{_opt_qt5_libdir}/qt5/libexec/QtWebEngineProcess
-#{_opt_qt5_plugindir}/designer/libqwebengineview.so
 %{_opt_qt5_plugindir}/imageformats/libqpdf.so
 %dir %{_opt_qt5_datadir}/resources/
 %if ! 0%{?use_system_libicu}
@@ -381,3 +377,5 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 %files devtools
 %{_opt_qt5_datadir}/resources/qtwebengine_devtools_resources.pak
 
+%files designer-plugin
+%{_opt_qt5_plugindir}/designer/libqwebengineview.so
