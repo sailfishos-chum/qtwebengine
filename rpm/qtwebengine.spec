@@ -284,7 +284,7 @@ mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
 # adjust cmake dep(s) to allow for using the same Qt5 that was used to build it
 # using the lesser of %%version, %%_qt5_version
-%global lesser_version $(echo -e "%{version}\\n%{_opt_qt5_version}" | sort -V | head -1)
+%global lesser_version $(echo -e "%{version}\\n%{qt_version}" | sort -V | head -1)
 sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_opt_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
 
