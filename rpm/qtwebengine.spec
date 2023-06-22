@@ -21,7 +21,7 @@
 
 Summary: Qt5 - QtWebEngine components
 Name: opt-qt5-qtwebengine
-Version: 5.15.13
+Version: 5.15.14
 Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
