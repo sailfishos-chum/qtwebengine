@@ -8,6 +8,7 @@ set -e
 
 RELEASES="4.5.0.19"
 ARCH="i486 aarch64 armv7hl"
+BUILDER="${1:-docker}"
 
 # either testing or regular
 OBS_REPO_BASE=https://repo.sailfishos.org/obs/sailfishos:/chum:/testing
@@ -20,7 +21,7 @@ for release in $RELEASES; do
 	else
 	    echo "Building RPMs for ${release}-${arch}"
 	    rm -rf RPMS/${TARGET}
-	    docker run --rm -it -v `pwd`:/source \
+	    $BUILDER run --rm -it -v `pwd`:/source \
 		   sailfishos-${arch}-${release} \
 		   buildrpm -v chum \
 		   -r ${OBS_REPO_BASE}/${release}_${arch}/
