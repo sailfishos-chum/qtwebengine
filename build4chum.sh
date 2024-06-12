@@ -6,7 +6,7 @@
 
 set -e
 
-RELEASES="4.5.0.19"
+RELEASES="4.5.0.24"
 ARCH="i486 aarch64 armv7hl"
 BUILDER="${1:-docker}"
 
