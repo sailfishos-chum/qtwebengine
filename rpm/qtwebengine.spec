@@ -1,4 +1,4 @@
-%global qt_version 5.15.8
+%global qt_version 5.15.14
 
 %global _hardened_build 1
 
