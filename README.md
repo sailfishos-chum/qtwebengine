@@ -12,3 +12,6 @@ interaction of patching and git. So, sometimes Fedora patches have to
 be split into two parts accordingly. Patches also have to be applied
 while in the corresponding folder. See RPM SPEC for application of
 patches and add/remove new ones accordingly.
+
+On updates, also set Qt and Qt Webengine versions in SPEC file: at the top
+and in the corresponding `Version: ` tag
