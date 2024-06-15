@@ -15,11 +15,12 @@ OBS_REPO_BASE=https://repo.sailfishos.org/obs/sailfishos:/chum:/testing
 
 for release in $RELEASES; do
     for arch in $ARCH; do
-	TARGET=${release}-${arch}
+        R=`echo $release | cut -d . -f 1-2`
+	TARGET=${R}-${arch}
 	if compgen -G "RPMS/${TARGET}/*.rpm" > /dev/null; then
-	    echo "RPMs for ${release}-${arch} are found in RPMS/$TARGET, skipping"
+	    echo "RPMs for ${TARGET} are found in RPMS/$TARGET, skipping"
 	else
-	    echo "Building RPMs for ${release}-${arch}"
+	    echo "Building RPMs for ${TARGET}"
 	    rm -rf RPMS/${TARGET}
 	    $BUILDER run --rm -it -v `pwd`:/source \
 		   sailfishos-${arch}-${release} \
@@ -30,7 +31,7 @@ for release in $RELEASES; do
 	    mv *.rpm $TARGET
 	    tar zcvf ${TARGET}.tar.gz $TARGET
 	    popd
-	    echo "RPMs for ${release}-${arch} ready"
+	    echo "RPMs for ${TARGET} ready"
 	fi
     done
 done

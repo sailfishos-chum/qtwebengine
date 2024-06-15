@@ -52,15 +52,15 @@ Patch7:  chromium-hunspell-nullptr.patch
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.15.5-use-python2-main-tree.patch
-Patch27: qtwebengine-everywhere-5.15.5-use-python2-chromium.patch
+#Patch27: qtwebengine-everywhere-5.15.5-use-python2-chromium.patch
 
 Patch32: qtwebengine-skia-missing-includes.patch
 # Fix QtWebEngine on Apple M1 hardware (patch from Arch Linux ARM)
 ## Cf. https://bugreports.qt.io/browse/QTBUG-108674
 ## Cf. https://bugzilla.redhat.com/show_bug.cgi?id=2144200
 ## From: https://chromium-review.googlesource.com/c/chromium/src/+/3545665
-Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
-Patch34: qtwebengine-fix-build-chromium.patch
+#Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
+#Patch34: qtwebengine-fix-build-chromium.patch
 Patch35: qt5-qtwebengine-c99.patch
 Patch36: qtwebengine-fix-build-main-tree.patch
 
@@ -213,10 +213,10 @@ pushd src/3rdparty
 %patch6 -p3
 %patch7 -p3
 %patch24 -p3
-%patch27 -p3
+#%patch27 -p3
 %patch32 -p3
-%patch33 -p3
-%patch34 -p3
+#%patch33 -p3
+#%patch34 -p3
 %patch35 -p3
 popd
 
